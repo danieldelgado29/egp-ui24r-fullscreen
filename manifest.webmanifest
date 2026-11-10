@@ -1,0 +1,25 @@
+{
+  "name": "EGP Ui24R — Fullscreen",
+  "short_name": "EGP Ui24R",
+  "description": "Interfaz tablet de Soundcraft Ui24R con zoom y pantalla completa",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#080b10",
+  "theme_color": "#090d13",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
