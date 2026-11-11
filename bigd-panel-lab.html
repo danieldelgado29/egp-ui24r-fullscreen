@@ -10,7 +10,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-ui24r.png">
 <link rel="icon" type="image/png" href="./icon-ui24r.png">
-<title>EGP Ui24R BIG D — V0.6 LAB</title>
+<title>EGP Ui24R BIG D — V0.7 LAB</title>
 <style>
 *{box-sizing:border-box}
 :root{color-scheme:dark}
@@ -22,8 +22,8 @@ html,body{position:fixed;inset:0;width:100%;height:100%;margin:0;overflow:hidden
 #ui24rOverlay.big #ui24rFrame{width:1920px;height:1080px}
 #veil{position:fixed;inset:0;z-index:3;display:none;touch-action:none}
 #veil.active{display:block}
-#bar{position:fixed;z-index:8;bottom:max(6px,env(safe-area-inset-bottom));right:max(6px,env(safe-area-inset-right));display:flex;align-items:center;gap:4px;background:#101d30ee;border:1px solid #365b7b;border-radius:11px;padding:5px;max-width:calc(100% - 12px)}
-button,a.tool{border:0;border-radius:7px;background:#234566;color:white;font-size:12px;font-weight:700;padding:9px 8px;min-height:36px;text-decoration:none;white-space:nowrap;touch-action:manipulation}
+#bar{position:fixed;z-index:2147483645;bottom:max(7px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:5px;background:#101d30f5;border:2px solid #5c8fbc;border-radius:12px;padding:6px;width:max-content;max-width:calc(100vw - 14px);box-shadow:0 3px 25px #000e;-webkit-transform:translateX(-50%)}
+button,a.tool{border:1px solid #5989b2;border-radius:7px;background:#234566;color:white;font-size:12px;font-weight:700;padding:9px 10px;min-height:39px;text-decoration:none;white-space:nowrap;touch-action:manipulation}button:disabled{opacity:.9;color:white}#fit,#move{background:#23628a}
 button.active{background:#217b62}
 #readout{font-size:11px;min-width:32px;text-align:center}
 #status{position:fixed;z-index:7;top:max(5px,env(safe-area-inset-top));left:5px;background:#142337e6;border:1px solid #36516f;border-radius:8px;padding:6px 9px;font-size:11px;pointer-events:none;max-width:60vw}
@@ -44,11 +44,11 @@ button.active{background:#217b62}
 <div id="help" hidden>Si la pantalla está vacía, pulsa <b>DIRECTO</b> para comprobar el acceso a la consola. Que el iframe termine de cargar no verifica que los shows ni los faders estén conectados.</div>
 <div id="bar">
   <button id="big">BIG D</button>
-  <button id="minus" aria-label="Reducir" disabled>−</button>
-  <button id="fit" disabled>AJUSTAR</button>
-  <button id="plus" aria-label="Ampliar" disabled>+</button>
+  <button id="minus" aria-label="Reducir">ZOOM −</button>
+  <button id="fit">AJUSTAR</button>
+  <button id="plus" aria-label="Ampliar">ZOOM +</button>
   <span id="readout"></span>
-  <button id="move" disabled>MOVER</button>
+  <button id="move">MOVER</button>
   <a class="tool" href="https://ui.elenagirjoaba.com/mixer.html" target="_blank" rel="noopener">DIRECTO</a>
   <button id="hide">OCULTAR</button>
 </div>
@@ -61,7 +61,7 @@ const overlay=document.querySelector('#ui24rOverlay'),stage=document.querySelect
 frame=document.querySelector('#ui24rFrame'),veil=document.querySelector('#veil'),
 status=document.querySelector('#status'),bar=document.querySelector('#bar'),readout=document.querySelector('#readout');
 const big=document.querySelector('#big'),move=document.querySelector('#move');
-const buttons=['minus','fit','plus','move'].map(id=>document.getElementById(id));
+
 let isBig=false,isMove=false,scale=1,x=0,y=0,gesture=null,loaded=false;
 function viewport(){return {w:window.innerWidth||document.documentElement.clientWidth,h:window.innerHeight||document.documentElement.clientHeight}}
 function clamp(){const v=viewport(),w=W*scale,h=H*scale;x=w<=v.w?(v.w-w)/2:Math.min(0,Math.max(v.w-w,x));y=h<=v.h?(v.h-h)/2:Math.min(0,Math.max(v.h-h,y))}
@@ -69,12 +69,12 @@ function paint(){if(!isBig)return;clamp();stage.style.transform='translate3d('+x
 function fit(){const v=viewport();scale=Math.min(v.w/W,v.h/H);x=(v.w-W*scale)/2;y=(v.h-H*scale)/2;paint()}
 function zoom(value,cx,cy){if(!isBig)return;const v=viewport();cx=cx??v.w/2;cy=cy??v.h/2;const old=scale;scale=Math.max(.12,Math.min(2,Number(value)||old));x=cx-(cx-x)*scale/old;y=cy-(cy-y)*scale/old;paint()}
 function setMove(next){isMove=!!next;veil.classList.toggle('active',isMove&&isBig);move.classList.toggle('active',isMove);move.textContent=isMove?'MEZCLAR':'MOVER';gesture=null}
-function setBig(next){isBig=!!next;overlay.classList.toggle('big',isBig);big.classList.toggle('active',isBig);big.textContent=isBig?'PANEL':'BIG D';for(const b of buttons)b.disabled=!isBig;if(isBig){fit()}else{setMove(false);stage.style.transform='none';readout.textContent=''}}
+function setBig(next){isBig=!!next;overlay.classList.toggle('big',isBig);big.classList.toggle('active',isBig);big.textContent=isBig?'PANEL':'BIG D';if(isBig){fit()}else{setMove(false);stage.style.transform='none';readout.textContent=''}}
 big.onclick=()=>setBig(!isBig);
-document.getElementById('fit').onclick=fit;
-document.getElementById('minus').onclick=()=>zoom(scale/1.22);
-document.getElementById('plus').onclick=()=>zoom(scale*1.22);
-move.onclick=()=>setMove(!isMove);
+document.getElementById('fit').onclick=()=>{if(!isBig)setBig(true);else fit()};
+document.getElementById('minus').onclick=()=>{if(!isBig)setBig(true);zoom(scale/1.22)};
+document.getElementById('plus').onclick=()=>{if(!isBig)setBig(true);zoom(scale*1.22)};
+move.onclick=()=>{if(!isBig)setBig(true);setMove(!isMove)};
 document.getElementById('hide').onclick=()=>{bar.style.display='none';document.getElementById('restore').style.display='block'};
 document.getElementById('restore').onclick=()=>{bar.style.display='flex';document.getElementById('restore').style.display='none'};
 const pts=t=>Array.from(t,v=>({x:v.clientX,y:v.clientY}));
